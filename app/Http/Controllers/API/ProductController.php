@@ -17,7 +17,16 @@ class ProductController extends Controller
      *     @OA\Parameter(
      *      name="page",
      *      in="query",
-     *      required=true,
+     *      required=false,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *
+     *     @OA\Parameter(
+     *      name="name",
+     *      in="query",
+     *      required=false,
      *      @OA\Schema(
      *           type="string"
      *      )
@@ -32,6 +41,13 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
+        $input = $request->all();
+        $name=isset($input["name"])? $input["name"] : "";
+        if(!empty($name))
+        {
+            $products = Product::where("name", 'LIKE', "%$name%")->paginate(2);
+            return response()->json($products);
+        }
         $products = Product::paginate(2);// ::all();
         return response()->json($products);
     }
